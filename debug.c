@@ -15,18 +15,29 @@ void disassemble_chunk(chunk_t *chunk, const char *name)
 int disassemble_instruction(chunk_t *chunk, int offset)
 {
     printf("%04d ", offset);
-    if (offset > 0 && chunk->lines[offset] == chunk->lines[offset - 1])
-        printf("   | ");
+    int current_line = get_line(chunk, offset);
+
+    if (offset > 0)
+    {
+        int previous_line = get_line(chunk, offset - 1);
+        if (current_line == previous_line)
+            printf("   | ");
+        else
+            printf("%4d ", current_line);
+    }
     else
-        printf("%4d ", chunk->lines[offset]);
+    {
+        printf("%4d ", current_line);
+    }
 
     uint8_t instruction = chunk->code[offset];
-    switch (instruction) {
-        case OP_RETURN:
-            return simple_instruction("OP_RETURN", offset);
-        case OP_CONSTANT:
-            return constant_instruction("OP_CONSTANT", chunk, offset);
-        default:
+    switch (instruction)
+    {
+    case OP_RETURN:
+        return simple_instruction("OP_RETURN", offset);
+    case OP_CONSTANT:
+        return constant_instruction("OP_CONSTANT", chunk, offset);
+    default:
         printf("Unknown opcode %d\n", instruction);
         return (offset + 1);
     }
