@@ -29,36 +29,36 @@ static void run_file(const char *path)
  */
 static char *read_file(const char *path)
 {
-    // Attempt to open file
+	// Attempt to open file
 	FILE *file = fopen(path, "rb");
-    if (file == NULL)
-    {
-        fprintf(stderr, "Failed to open file '%s'.\n", path);
-        exit(74);
-    }
+	if (file == NULL)
+	{
+		fprintf(stderr, "Failed to open file '%s'.\n", path);
+		exit(74);
+	}
 
-    // Determine the file size
+	// Determine the file size
 	fseek(file, 0L, SEEK_END);
 	size_t file_size = ftell(file);
 	rewind(file);
 
-    // Allocate memory for file contents
+	// Allocate memory for file contents
 	char *buffer = (char *) malloc(file_size + 1);
-    if (buffer == NULL)
-    {
-        fprintf(stderr, "Not enough memory to read '%s'.\n", path);
-        fclose(file);
-        exit(74);
-    }
+	if (buffer == NULL)
+	{
+		fprintf(stderr, "Not enough memory to read '%s'.\n", path);
+		fclose(file);
+		exit(74);
+	}
 
-    // Read file into the bffer
+	// Read file into the bffer
 	size_t bytes_read = fread(buffer, sizeof(char), file_size, file);
-    if (bytes_read < file_size)
-    {
-        fprintf(stderr, "Failed to read the entire file.\n");
-        fclose(file);
-        return (NULL);
-    }
+	if (bytes_read < file_size)
+	{
+		fprintf(stderr, "Failed to read the entire file.\n");
+		fclose(file);
+		return (NULL);
+	}
 
 	buffer[bytes_read] = '\0';
 
