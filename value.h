@@ -4,7 +4,7 @@
 
 typedef double value_t;
 
-typedef struct value_array_s
+typedef struct
 {
     int capacity;
     int count;
