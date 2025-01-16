@@ -60,7 +60,7 @@ static void repl(void) {
             break;
         }
 
-        if (strcmp(line, "exit") == 0) {
+        if (strcmp(line, "exit\n") == 0) {
             break;
         }
 

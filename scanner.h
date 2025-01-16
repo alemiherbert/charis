@@ -23,6 +23,7 @@ typedef enum
     TOKEN_SEMICOLON,
     TOKEN_SLASH,
     TOKEN_STAR,
+    TOKEN_QUESTION,
 
     // One or two character tokens.
     TOKEN_BANG,
@@ -99,22 +100,5 @@ typedef struct scanner_s
 // Function prototypes
 void init_scanner(const char *source);
 token_t scan_token(void);
-
-// Helper functions
-static bool is_at_end(void);
-static char advance(void);
-static bool match(char expected);
-static char peek(void);
-static char peek_next(void);
-static void skip_whitespace(void);
-static token_type_t check_keyword(int start, int length, const char *rest, token_type_t type);
-static token_type_t identifier_type(void);
-static token_t identifier(void);
-static token_t make_token(token_type_t type);
-static token_t error_token(const char *message);
-static token_t string(void);
-static token_t number(void);
-static bool is_digit(char c);
-static bool is_alpha(char c);
 
 #endif // SCANNER_H
