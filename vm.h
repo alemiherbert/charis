@@ -30,7 +30,7 @@ void init_vm(void);
 void free_vm(void);
 
 
-interpret_result_t interpret(chunk_t *chunk);
+interpret_result_t interpret(const char *source);
 static interpret_result_t run(void);
 void reset_stack(void);
 static void grow_stack(void);

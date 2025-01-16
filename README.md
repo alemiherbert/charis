@@ -1,3 +1,3 @@
 # Charis
-A graceful little programming language written in C
+A personal flavour of lox.
 

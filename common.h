@@ -2,8 +2,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+#include <sys/types.h>
 
 #define DEBUG_TRACE_EXECUTION
-
-static void run_file(const char *path);
-static char *read_file(const char *path);

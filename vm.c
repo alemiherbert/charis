@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include "compiler.h"
 #include "vm.h"
 
 vm_t vm;
@@ -21,12 +22,10 @@ void free_vm(void)
 	vm.chunk = NULL;
 }
 
-interpret_result_t interpret(chunk_t *chunk)
+interpret_result_t interpret(const char *source)
 {
-	init_vm();
-	vm.chunk = chunk;
-	vm.ip = vm.chunk->code;
-	return run();
+	compile(source);
+	return (INTERPRET_OK);
 }
 
 static void handle_OP_CONSTANT(void)
