@@ -3,6 +3,7 @@
 parser_t parser;
 chunk_t *compiling_chunk;
 
+static void literal(void);
 static void unary(void);
 static void binary(void);
 static void ternary(void);
@@ -25,14 +26,14 @@ parse_rule_t rules[] = {
 	[TOKEN_SEMICOLON] = {NULL, NULL, PREC_NONE},
 	[TOKEN_SLASH] = {NULL, binary, PREC_FACTOR},
 	[TOKEN_STAR] = {NULL, binary, PREC_FACTOR},
-	[TOKEN_BANG] = {NULL, NULL, PREC_NONE},
-	[TOKEN_BANG_EQUAL] = {NULL, NULL, PREC_NONE},
+	[TOKEN_BANG] = {unary, NULL, PREC_NONE},
+	[TOKEN_BANG_EQUAL] = {NULL, binary, PREC_EQUALITY},
 	[TOKEN_EQUAL] = {NULL, NULL, PREC_NONE},
-	[TOKEN_EQUAL_EQUAL] = {NULL, NULL, PREC_NONE},
-	[TOKEN_GREATER] = {NULL, NULL, PREC_NONE},
-	[TOKEN_GREATER_EQUAL] = {NULL, NULL, PREC_NONE},
-	[TOKEN_LESS] = {NULL, NULL, PREC_NONE},
-	[TOKEN_LESS_EQUAL] = {NULL, NULL, PREC_NONE},
+	[TOKEN_EQUAL_EQUAL] = {NULL, binary, PREC_EQUALITY},
+	[TOKEN_GREATER] = {NULL, binary, PREC_COMPARISON},
+	[TOKEN_GREATER_EQUAL] = {NULL, binary, PREC_COMPARISON},
+	[TOKEN_LESS] = {NULL, binary, PREC_COMPARISON},
+	[TOKEN_LESS_EQUAL] = {NULL, binary, PREC_COMPARISON},
 	[TOKEN_IDENTIFIER] = {NULL, NULL, PREC_NONE},
 	[TOKEN_STRING] = {NULL, NULL, PREC_NONE},
 	[TOKEN_QUESTION] = {NULL, ternary, PREC_TERNARY},
@@ -40,16 +41,16 @@ parse_rule_t rules[] = {
 	[TOKEN_AND] = {NULL, NULL, PREC_NONE},
 	[TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
 	[TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
-	[TOKEN_FALSE] = {NULL, NULL, PREC_NONE},
+	[TOKEN_FALSE] = {literal, NULL, PREC_NONE},
 	[TOKEN_FOR] = {NULL, NULL, PREC_NONE},
 	[TOKEN_IF] = {NULL, NULL, PREC_NONE},
-	[TOKEN_NULL] = {NULL, NULL, PREC_NONE},
+	[TOKEN_NULL] = {literal, NULL, PREC_NONE},
 	[TOKEN_OR] = {NULL, NULL, PREC_NONE},
 	[TOKEN_PRINT] = {NULL, NULL, PREC_NONE},
 	[TOKEN_RETURN] = {NULL, NULL, PREC_NONE},
 	[TOKEN_SUPER] = {NULL, NULL, PREC_NONE},
 	[TOKEN_THIS] = {NULL, NULL, PREC_NONE},
-	[TOKEN_TRUE] = {NULL, NULL, PREC_NONE},
+	[TOKEN_TRUE] = {literal, NULL, PREC_NONE},
 	[TOKEN_WHILE] = {NULL, NULL, PREC_NONE},
 	[TOKEN_ERROR] = {NULL, NULL, PREC_NONE},
 	[TOKEN_EOF] = {NULL, NULL, PREC_NONE},
@@ -186,6 +187,24 @@ static void binary(void)
 	case TOKEN_SLASH:
 		emit_byte(OP_DIVIDE);
 		break;
+	case TOKEN_BANG_EQUAL:
+		emit_bytes(OP_EQUAL, OP_NOT);
+		break;
+	case TOKEN_EQUAL_EQUAL:
+		emit_byte(OP_EQUAL);
+		break;
+	case TOKEN_GREATER:
+		emit_byte(OP_GREATER);
+		break;
+	case TOKEN_GREATER_EQUAL:
+		emit_bytes(OP_LESS, OP_NOT);
+		break;
+	case TOKEN_LESS:
+		emit_byte(OP_LESS);
+		break;
+	case TOKEN_LESS_EQUAL:
+		emit_bytes(OP_GREATER, OP_NOT);
+		break;
 	default:
 		return;
 	}
@@ -198,11 +217,29 @@ static void grouping(void)
 	consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression.");
 }
 
+static void literal(void)
+{
+	switch (parser.previous.type)
+	{
+	case TOKEN_FALSE:
+		emit_byte(OP_FALSE);
+		break;
+	case TOKEN_NULL:
+		emit_byte(OP_NULL);
+		break;
+	case TOKEN_TRUE:
+		emit_byte(OP_TRUE);
+		break;
+	default:
+		return;
+	}
+}
+
 // Parses and emits bytecode for a numeric literal.
 static void number(void)
 {
-	value_t value = strtod(parser.previous.start, NULL);
-	emit_constant(value);
+	double value = strtod(parser.previous.start, NULL);
+	emit_constant(number_val(value));
 }
 
 // Parses and emits bytecode for a unary expression.
@@ -216,6 +253,9 @@ static void unary(void)
 		emit_byte(OP_NEGATE);
 		break;
 	case TOKEN_PLUS:
+		break;
+	case TOKEN_BANG:
+		emit_byte(OP_NOT);
 		break;
 	default:
 		return;

@@ -29,5 +29,16 @@ void write_value_array(value_array_t *array, value_t value)
 
 void print_value(value_t value)
 {
-	printf("%g", value);
+	switch (value.type)
+	{
+	case VAL_BOOLEAN:
+		printf(as_bool(value) ? "true" : "false");
+		break;
+	case VAL_NULL:
+		printf("null");
+		break;
+	case VAL_NUMBER:
+		printf("%g", as_number(value));
+		break;
+	}
 }

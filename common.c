@@ -4,22 +4,52 @@
 #include "common.h"
 #include "vm.h"
 
-/**
- * run_file - run a source file
- * @path: path to the source code
- */
-#if 0
-static void run_file(const char *path)
+value_t bool_val(bool value)
 {
-	char *source = read_file(path);
-	interpret_result_t result = interpret(source);
-	free(source);
-
-	if (result == INTERPRET_COMPILE_ERROR)
-		exit(65);
-	if (result == INTERPRET_RUNTIME_ERROR)
-		exit(70);
+	value_t result;
+	result.type = VAL_BOOLEAN;
+	result.as.boolean = value;
+	return (result);
 }
-#endif
 
+value_t null_val(void)
+{
+	value_t result;
+	result.type = VAL_NULL;
+	result.as.number = 0;
+	return (result);
+}
 
+value_t number_val(double value)
+{
+	value_t result;
+	result.type = VAL_NUMBER;
+	result.as.number = value;
+	return (result);
+}
+
+bool as_bool(value_t value)
+{
+	if (!is_bool(value))
+	{
+		fprintf(stderr, "Error: Expected boolean value.\n");
+		exit(1);
+	}
+	return (value.as.boolean);
+}
+
+double as_number(value_t value)
+{
+	if (!is_number(value))
+	{
+		fprintf(stderr, "Error: Expected number value.\n");
+		exit(1);
+	}
+	return value.as.number;
+}
+
+bool is_bool(value_t value) { return (value.type == VAL_BOOLEAN); }
+
+bool is_null(value_t value) { return (value.type == VAL_NULL); }
+
+bool is_number(value_t value) { return (value.type == VAL_NUMBER); }

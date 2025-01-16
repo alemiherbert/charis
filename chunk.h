@@ -7,12 +7,23 @@
 typedef enum opcode_s
 {
 	OP_CONSTANT,
+
 	OP_NEGATE,
 	OP_ADD,
 	OP_SUBTRACT,
 	OP_MULTIPLY,
 	OP_DIVIDE,
+
+	OP_TRUE,
+	OP_FALSE,
+	OP_NOT,
+	OP_EQUAL,
+	OP_GREATER,
+	OP_LESS,
+
 	OP_RETURN,
+
+	OP_NULL
 } opcode_t;
 
 typedef struct chunk_s

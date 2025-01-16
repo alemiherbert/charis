@@ -2,8 +2,6 @@
 
 #include "common.h"
 
-typedef double value_t;
-
 typedef struct
 {
     int capacity;
